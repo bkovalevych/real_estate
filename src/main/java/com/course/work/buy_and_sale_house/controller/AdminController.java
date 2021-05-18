@@ -98,17 +98,63 @@ public class AdminController {
         if (action == null) {
             result.put("message", "action = load | delete");
         }
-        User mustBeNUll = userService.findUserByUsername("test_buyer");
-        User buyer = new User("test_buyer",
+        User mustBeNUll = userService.findUserByUsername("kradko_");
+        User buyer = new User("kradko_",
                 "12345",
-                "buyer",
-                "buyer",
-                "123");
-        User seller = new User("test_seller",
+                "Іван",
+                "Мазуров",
+                "0990543561");
+        User seller = new User("petrov_",
                 "12345",
-                "seller",
-                "seller",
-                "123");
+                "Генадій",
+                "Петров",
+                "0660543541");
+        List<User> others = new ArrayList<>();
+        others.add(new User("kravchenko_",
+                "12345",
+                "Лариса",
+                "Кравченко",
+                "0630543542"));
+        others.add(new User("segiyenko_",
+                "12345",
+                "Євгенія",
+                "Сегрієнко",
+                "0950543543"));
+        others.add(new User("kravchuk_",
+                "12345",
+                "Валентин",
+                "Кравчук",
+                "0960502542"));
+        others.add(new User("panasiyuk_",
+                "12345",
+                "Владислав",
+                "Панасюк",
+                "0670235549"));
+        others.add(new User("antonenko_",
+                "12345",
+                "Єлизавета",
+                "Антоненко",
+                "0680543544"));
+        others.add(new User("dmytrenko_",
+                "12345",
+                "Ілля",
+                "Дмитренко",
+                "0660543546"));
+        others.add(new User("lysenko_",
+                "12345",
+                "Дар'я",
+                "Лисенко",
+                "06605412341"));
+        others.add(new User("kramarchuk_",
+                "12345",
+                "Микола",
+                "Крамарчук",
+                "06605433211"));
+        others.add(new User("melnychenko_",
+                "12345",
+                "Любов",
+                "Мельниченко",
+                "0660543001"));
         if ("load".equals(action) && mustBeNUll != null) {
             result.put("message2", "data is already loaded");
         }
@@ -118,6 +164,9 @@ public class AdminController {
 
             userService.createUser(buyer);
             userService.createUser(seller);
+            for (User us: others) {
+                userService.createUser(us);
+            }
             List<District> districts = districtService.loadTestData();
             Date[] dates = new Date[] {new Date(new Date().getTime() - 1000 * 60 * 60 * 24 * 5), new Date()};
             Double[] commissionValues = new Double[] {0.1, 0.2};
@@ -125,9 +174,14 @@ public class AdminController {
                 Date date = dates[i];
                 Double value = commissionValues[i];
                 commissionService.save(value, date);
-                List<PropertyForSale> sales = propertyForSaleService.loadTestData(districts, seller, 10);
-                List<RequestToBuy> requestToBuys = requestToBuyService.loadTestData(districts, buyer, 12 + i);
-                List<Deal> deals = dealService.loadTestData(requestToBuys, sales, 5);
+                List<PropertyForSale> sales = propertyForSaleService.loadTestData(districts, seller, 5);
+                List<RequestToBuy> requestToBuys = requestToBuyService.loadTestData(districts, buyer, 5 + i);
+                List<RequestToBuy> requestToBuysOthers = requestToBuyService.loadTestData(districts, others.get(0), 5 + i + 1);
+                List<PropertyForSale> salesOthers = propertyForSaleService.loadTestData(districts, others.get(0), 5 + i + 1);
+                List<Deal> deals = dealService.loadTestData(requestToBuys, sales, 4);
+                List<Deal> dealsOther = dealService.loadTestData(requestToBuysOthers, sales, 4);
+                List<Deal> dealsOtherBySale = dealService.loadTestData(requestToBuys, salesOthers, 4);
+
                 //result.put("deals" + Integer.toString(i), deals);
                 //result.put("sales" + Integer.toString(i), sales);
                 //result.put("rToBuy" + Integer.toString(i), requestToBuys);
@@ -155,6 +209,16 @@ public class AdminController {
                 List<RequestToBuy> rToBuys = requestToBuyService.findAllByUser(seller);
                 requestToBuyService.deleteAll(rToBuys);
                 userService.deleteById(seller.getId());
+            }
+            User otherUser = userService.findUserByUsername(others.get(0).getUsername());
+            if (otherUser != null) {
+                List<Deal> dealsBySeller = dealService.findAllByBuyer(otherUser);
+                dealService.deleteAll(dealsBySeller);
+                List<PropertyForSale> sales = propertyForSaleService.findAllByUser(otherUser);
+                propertyForSaleService.deleteAll(sales);
+                List<RequestToBuy> rToBuys = requestToBuyService.findAllByUser(otherUser);
+                requestToBuyService.deleteAll(rToBuys);
+                userService.deleteById(otherUser.getId());
             }
             districtService.deleteTestData();
         }
