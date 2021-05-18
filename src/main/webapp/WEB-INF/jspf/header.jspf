@@ -1,0 +1,78 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <c:if test="${empty user}">
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}${prefix}/login">Ввійти</a>
+                </li>
+                <c:if test="${not '/admin'.equals(prefix)}">
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}${prefix}/register">Реєстрація</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/admin">Зайти (адмін)</a>
+                    </li>
+                </c:if>
+
+            </c:if>
+            <c:if test="${not empty user}">
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/">Мій акаунт</a>
+                </li>
+                <c:if test="${role == 'user'}">
+                    <li class="nav-item dropdown">
+                        <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                            Продажі
+                        </a>
+
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/propertyForSale">Всі продажі</a></li>
+                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/propertyForSale?isMy=1">Мої продажі</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="btn btn-success dropdown-toggle" href="#" role="button" id="buying" data-bs-toggle="dropdown" aria-expanded="false">
+                            Купівлі
+                        </a>
+
+                        <ul class="dropdown-menu" aria-labelledby="buying">
+                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/requestToBuy">Всі купівлі</a></li>
+                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/requestToBuy?isMy=1">Мої купівлі</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/district">Райони</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/users">Користувачі</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/deal">Угоди</a>
+                    </li>
+                </c:if>
+
+                <c:if test="${role == 'admin'}">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/deals">Угоди</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/commission">Комісії</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/test?action=load">Завантажити тестові дані</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/test?action=delete">Видалити тестові дані</a>
+                    </li>
+                </c:if>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}${prefix}/logout">Вийти</a>
+                </li>
+            </c:if>
+        </ul>
+    </div>
+</nav>
